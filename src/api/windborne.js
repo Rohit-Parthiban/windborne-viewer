@@ -1,13 +1,10 @@
-// Use upstream directly in production
-// use the proxy path (works on Vercel + keeps your dev proxy working)
+// src/api/windborne.js
 const BASE = "/api/windborne/treasure";
-
 
 // Accepts object rows and array rows; synthesizes id/ts when missing
 function normalizeRow(row, hourIndex, rowIndex) {
   if (row && typeof row === "object" && !Array.isArray(row)) {
-    const id =
-      row.id ?? row.balloon_id ?? row.identifier ?? row.name ?? row.ID ?? `b${rowIndex}`;
+    const id = row.id ?? row.balloon_id ?? row.identifier ?? row.name ?? row.ID ?? `b${rowIndex}`;
     const lat = Number(row.lat ?? row.latitude);
     const lon = Number(row.lon ?? row.lng ?? row.longitude);
     const tsRaw = row.ts ?? row.timestamp ?? row.time ?? null;
@@ -33,14 +30,14 @@ function normalizeRow(row, hourIndex, rowIndex) {
 export async function fetchLast24h() {
   const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
 
- const results = await Promise.allSettled(
-   hours.map((hh) =>
-     fetch(`${BASE}/${hh}.json`, { cache: "no-store" }).then((r) => {
-       if (!r.ok) throw new Error(`HTTP ${r.status}`);
-       return r.json();
-     })
-   )
- );
+  const results = await Promise.allSettled(
+    hours.map((hh) =>
+      fetch(`${BASE}/${hh}.json`, { cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+    )
+  );
 
   const byId = {};
   let totalRows = 0;
@@ -59,7 +56,7 @@ export async function fetchLast24h() {
     });
   });
 
-  // sort/dedupe per id
+  // sort & dedupe per id
   for (const id of Object.keys(byId)) {
     const seen = new Set();
     byId[id] = byId[id]
