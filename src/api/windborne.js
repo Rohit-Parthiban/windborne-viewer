@@ -30,6 +30,7 @@ function normalizeRow(row, hourIndex, rowIndex) {
 export async function fetchLast24h() {
   const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
 
+  // ✅ Correct Promise.allSettled mapping (async/await form)
   const results = await Promise.allSettled(
     hours.map(async (hh) => {
       const r = await fetch(`${BASE}/${hh}.json`, { cache: "no-store" });
@@ -37,7 +38,6 @@ export async function fetchLast24h() {
       return r.json();
     })
   );
-
 
   const byId = {};
   let totalRows = 0;

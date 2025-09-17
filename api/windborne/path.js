@@ -1,15 +1,13 @@
+// api/windborne/[...path].js
 export default async function handler(req, res) {
   try {
-    // Join any nested segments after /api/windborne/**
     const path = Array.isArray(req.query.path) ? req.query.path.join("/") : "";
     const upstream = `https://a.windbornesystems.com/${path}`;
-
     const r = await fetch(upstream, {
       cache: "no-store",
       headers: { "User-Agent": "windborne-viewer" },
     });
 
-    // Stream result back
     const buf = Buffer.from(await r.arrayBuffer());
     res.status(r.status);
     res.setHeader(
