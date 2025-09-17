@@ -31,13 +31,13 @@ export async function fetchLast24h() {
   const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
 
   const results = await Promise.allSettled(
-    hours.map((hh) =>
-      fetch(`${BASE}/${hh}.json`, { cache: "no-store" }).then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-    )
+    hours.map(async (hh) => {
+      const r = await fetch(`${BASE}/${hh}.json`, { cache: "no-store" });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
   );
+
 
   const byId = {};
   let totalRows = 0;
