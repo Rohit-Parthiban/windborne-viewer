@@ -1,4 +1,6 @@
-const BASE = "/api/windborne/treasure";
+// Use upstream directly in production
+const BASE = "https://a.windbornesystems.com/treasure";
+
 
 // Accepts object rows and array rows; synthesizes id/ts when missing
 function normalizeRow(row, hourIndex, rowIndex) {
@@ -29,10 +31,12 @@ function normalizeRow(row, hourIndex, rowIndex) {
 
 export async function fetchLast24h() {
   const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
-
   const results = await Promise.allSettled(
-    hours.map((h) =>
-      fetch(`${BASE}/${h}.json`, { cache: "no-store" }).then((r) => r.json())
+    hours.map((hh) =>
+      fetch(`${BASE}/${hh}.json`, { cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
     )
   );
 
